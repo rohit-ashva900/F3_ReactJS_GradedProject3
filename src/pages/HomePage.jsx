@@ -1,6 +1,4 @@
-
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MovieList from '../components/MovieList';
 import { getMoviesByType, getAllMovies } from '../services/movieService';
 
@@ -16,10 +14,6 @@ const HomePage = () => {
     fetchMovies(selectedType);
     fetchAllMovies();
   }, [selectedType]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [movies, searchQuery]);
 
   const fetchMovies = async (type) => {
     try {
@@ -39,12 +33,7 @@ const HomePage = () => {
     }
   };
 
-  const handleTypeChange = (type) => {
-    setSelectedType(type);
-    setSearchQuery('');
-  };
-
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (searchQuery === '') {
       setFilteredMovies(movies);
     } else {
@@ -53,6 +42,15 @@ const HomePage = () => {
       );
       setFilteredMovies(filtered);
     }
+  }, [searchQuery, movies, allMovies]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [movies, searchQuery, handleSearch]);
+
+  const handleTypeChange = (type) => {
+    setSelectedType(type);
+    setSearchQuery('');
   };
 
   const handleSearchChange = (e) => {
